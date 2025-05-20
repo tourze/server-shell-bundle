@@ -105,13 +105,13 @@ class ScriptExecutionFixtures extends Fixture implements DependentFixtureInterfa
      */
     private function createScriptExecution(
         ObjectManager $manager,
-        ShellScript $script,
-        Node $node,
+        ShellScript   $script,
+        Node          $node,
         CommandStatus $status,
-        ?string $result,
-        ?DateTime $executedAt,
-        ?float $executionTime,
-        ?int $exitCode
+        ?string       $result,
+        ?DateTime     $executedAt,
+        ?float        $executionTime,
+        ?int          $exitCode
     ): void
     {
         $execution = new ScriptExecution();
