@@ -11,6 +11,7 @@ class ServerShellBundle extends Bundle implements BundleDependencyInterface
     {
         return [
             \ServerNodeBundle\ServerNodeBundle::class => ['all' => true],
+            \ServerCommandBundle\ServerCommandBundle::class => ['all' => true],
         ];
     }
 }
