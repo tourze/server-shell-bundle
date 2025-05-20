@@ -6,6 +6,7 @@ use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use SebastianBergmann\Timer\Timer;
+use ServerCommandBundle\Service\RemoteCommandService;
 use ServerNodeBundle\Entity\Node;
 use ServerShellBundle\Entity\ScriptExecution;
 use ServerShellBundle\Entity\ShellScript;

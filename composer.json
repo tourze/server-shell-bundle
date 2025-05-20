@@ -14,11 +14,13 @@
     "doctrine/persistence": "^3.1 || ^4",
     "easycorp/easyadmin-bundle": "^4",
     "knplabs/knp-menu": "^3.7",
+    "phpunit/php-timer": "^6.0.0",
     "psr/log": "^3|^2|^1",
     "symfony/config": "^6.4",
     "symfony/console": "^6.4",
     "symfony/dependency-injection": "^6.4",
     "symfony/doctrine-bridge": "^6.4",
+    "symfony/filesystem": "^6.4",
     "symfony/form": "^6.4",
     "symfony/http-foundation": "^6.4",
     "symfony/http-kernel": "^6.4",
@@ -30,6 +32,7 @@
     "tourze/doctrine-user-bundle": "0.0.*",
     "tourze/easy-admin-attribute": "0.1.*",
     "tourze/easy-admin-menu-bundle": "0.1.*",
+    "tourze/server-command-bundle": "0.0.*",
     "tourze/server-node-bundle": "0.0.*"
   },
   "require-dev": {
