@@ -45,7 +45,7 @@ class ScriptExecutionMessageHandler
 
             // 使用服务执行脚本，但跳过创建执行记录的步骤
             $this->shellScriptService->executeScript($script, $node);
-        } catch  (\Throwable $e) {
+        } catch (\Throwable $e) {
             $this->logger->error('异步执行脚本时出错', [
                 'execution_id' => $executionId,
                 'exception' => $e,
