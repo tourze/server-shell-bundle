@@ -166,7 +166,7 @@ class ShellScriptService
             $this->updateExecutionResult($execution, $execResult, $executionTime);
 
             return $execution;
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             $this->handleExecutionError($execution, $e);
 
             return $execution;
