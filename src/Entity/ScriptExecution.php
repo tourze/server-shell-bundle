@@ -7,16 +7,11 @@ use Doctrine\ORM\Mapping as ORM;
 use ServerNodeBundle\Entity\Node;
 use ServerShellBundle\Enum\CommandStatus;
 use ServerShellBundle\Repository\ScriptExecutionRepository;
-use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
-use Tourze\DoctrineTimestampBundle\Attribute\CreateTimeColumn;
-use Tourze\DoctrineTimestampBundle\Attribute\UpdateTimeColumn;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
 use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
 use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 
-#[AsPermission(title: '脚本执行结果')]
 #[ORM\Entity(repositoryClass: ScriptExecutionRepository::class)]
 #[ORM\Table(name: 'ims_server_script_execution', options: ['comment' => '脚本执行结果'])]
 class ScriptExecution implements \Stringable
@@ -64,10 +59,7 @@ class ScriptExecution implements \Stringable
     #[ORM\Column(nullable: true, options: ['comment' => '更新人'])]
     private ?string $updatedBy = null;
 
-    #[IndexColumn]
-    #[CreateTimeColumn]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '创建时间'])]#[UpdateTimeColumn]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '更新时间'])]public function getId(): ?int
+    public function getId(): ?int
     {
         return $this->id;
     }
