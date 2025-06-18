@@ -26,11 +26,9 @@
     "symfony/http-kernel": "^6.4",
     "symfony/messenger": "^6.4",
     "tourze/bundle-dependency": "0.0.*",
-    "tourze/doctrine-indexed-bundle": "0.0.*",
     "tourze/doctrine-timestamp-bundle": "0.0.*",
     "tourze/doctrine-track-bundle": "0.1.*",
     "tourze/doctrine-user-bundle": "0.0.*",
-    "tourze/easy-admin-attribute": "0.1.*",
     "tourze/easy-admin-menu-bundle": "0.1.*",
     "tourze/server-command-bundle": "0.0.*",
     "tourze/server-node-bundle": "0.0.*"
