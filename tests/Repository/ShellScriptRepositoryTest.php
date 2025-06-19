@@ -7,13 +7,12 @@ use ServerShellBundle\Repository\ShellScriptRepository;
 
 class ShellScriptRepositoryTest extends TestCase
 {
-    public function testFindByTagsMethodExists(): void
+    public function testRepositoryMethodsExist(): void
     {
-        $this->assertTrue(method_exists(ShellScriptRepository::class, 'findByTags'), '方法findByTags应该存在');
-    }
-    
-    public function testFindAllEnabledMethodExists(): void
-    {
-        $this->assertTrue(method_exists(ShellScriptRepository::class, 'findAllEnabled'), '方法findAllEnabled应该存在');
+        // 验证仓储类实现了预期的查询方法
+        $reflection = new \ReflectionClass(ShellScriptRepository::class);
+        
+        $this->assertTrue($reflection->hasMethod('findByTags'));
+        $this->assertTrue($reflection->hasMethod('findAllEnabled'));
     }
 } 

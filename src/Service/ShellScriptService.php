@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use SebastianBergmann\Timer\Timer;
 use ServerCommandBundle\Entity\RemoteCommand;
+use ServerCommandBundle\Enum\CommandStatus as RemoteCommandStatus;
 use ServerCommandBundle\Service\RemoteCommandService;
 use ServerNodeBundle\Entity\Node;
 use ServerShellBundle\Entity\ScriptExecution;
@@ -216,7 +217,7 @@ class ShellScriptService
 
         // 执行上传
         $uploadResult = $this->remoteCommandService->executeCommand($uploadCommand);
-        if ($uploadCommand->getStatus() !== CommandStatus::COMPLETED) {
+        if ($uploadCommand->getStatus() !== RemoteCommandStatus::COMPLETED) {
             throw new \RuntimeException('脚本上传失败: ' . $uploadResult->getResult());
         }
 
@@ -270,17 +271,33 @@ class ShellScriptService
     private function updateExecutionResult(ScriptExecution $execution, RemoteCommand $execResult, float $executionTime): void
     {
         $execution->setResult($execResult->getResult());
-        $execution->setStatus($execResult->getStatus());
+        $execution->setStatus($this->mapRemoteCommandStatus($execResult->getStatus()));
         $execution->setExecutionTime($executionTime);
-        $execution->setExitCode($execResult->getStatus() === CommandStatus::COMPLETED ? 0 : 1);
+        $execution->setExitCode($execResult->getStatus() === RemoteCommandStatus::COMPLETED ? 0 : 1);
 
         $this->entityManager->flush();
     }
 
     /**
+     * 将远程命令状态映射为脚本执行状态
+     */
+    private function mapRemoteCommandStatus(?RemoteCommandStatus $status): ?CommandStatus
+    {
+        return match ($status) {
+            RemoteCommandStatus::PENDING => CommandStatus::PENDING,
+            RemoteCommandStatus::RUNNING => CommandStatus::RUNNING,
+            RemoteCommandStatus::COMPLETED => CommandStatus::COMPLETED,
+            RemoteCommandStatus::FAILED => CommandStatus::FAILED,
+            RemoteCommandStatus::TIMEOUT => CommandStatus::TIMEOUT,
+            RemoteCommandStatus::CANCELED => CommandStatus::CANCELED,
+            null => null,
+        };
+    }
+
+    /**
      * 处理执行过程中的错误
      */
-    private function handleExecutionError(ScriptExecution $execution, \Exception $e): void
+    private function handleExecutionError(ScriptExecution $execution, \Throwable $e): void
     {
         $this->logger->error('执行脚本时出错: ' . $e->getMessage(), [
             'script_id' => $execution->getScript()->getId(),

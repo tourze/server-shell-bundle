@@ -66,15 +66,7 @@ class ScriptExecutionCrudController extends AbstractCrudController
                     return '未知';
                 }
 
-                return match ($value) {
-                    CommandStatus::PENDING => '待执行',
-                    CommandStatus::RUNNING => '执行中',
-                    CommandStatus::COMPLETED => '已完成',
-                    CommandStatus::FAILED => '失败',
-                    CommandStatus::TIMEOUT => '超时',
-                    CommandStatus::CANCELED => '已取消',
-                    default => '未知'
-                };
+                return $value->getLabel();
             });
 
         yield TextareaField::new('result', '执行结果')

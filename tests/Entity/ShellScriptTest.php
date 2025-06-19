@@ -48,19 +48,6 @@ class ShellScriptTest extends TestCase
         $this->assertEquals('这是一个测试脚本', $shellScript->getDescription());
     }
     
-    /**
-     * 测试创建人和更新人设置
-     */
-    public function testCreatedByAndUpdatedBy(): void
-    {
-        $shellScript = new ShellScript();
-        
-        $shellScript->setCreatedBy('admin');
-        $this->assertEquals('admin', $shellScript->getCreatedBy());
-        
-        $shellScript->setUpdatedBy('manager');
-        $this->assertEquals('manager', $shellScript->getUpdatedBy());
-    }
     
     /**
      * 测试时间设置
@@ -69,11 +56,11 @@ class ShellScriptTest extends TestCase
     {
         $shellScript = new ShellScript();
         
-        $createTime = new \DateTime('2023-01-01 10:00:00');
+        $createTime = new \DateTimeImmutable('2023-01-01 10:00:00');
         $shellScript->setCreateTime($createTime);
         $this->assertEquals($createTime, $shellScript->getCreateTime());
         
-        $updateTime = new \DateTime('2023-01-02 11:00:00');
+        $updateTime = new \DateTimeImmutable('2023-01-02 11:00:00');
         $shellScript->setUpdateTime($updateTime);
         $this->assertEquals($updateTime, $shellScript->getUpdateTime());
     }

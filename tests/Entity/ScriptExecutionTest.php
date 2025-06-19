@@ -48,7 +48,7 @@ class ScriptExecutionTest extends TestCase
         $this->assertEquals('执行结果输出', $execution->getResult());
         
         // 测试执行时间设置
-        $executedAt = new \DateTime();
+        $executedAt = new \DateTimeImmutable();
         $execution->setExecutedAt($executedAt);
         $this->assertEquals($executedAt, $execution->getExecutedAt());
         
@@ -61,19 +61,6 @@ class ScriptExecutionTest extends TestCase
         $this->assertEquals(0, $execution->getExitCode());
     }
     
-    /**
-     * 测试创建人和更新人设置
-     */
-    public function testCreatedByAndUpdatedBy(): void
-    {
-        $execution = new ScriptExecution();
-        
-        $execution->setCreatedBy('admin');
-        $this->assertEquals('admin', $execution->getCreatedBy());
-        
-        $execution->setUpdatedBy('manager');
-        $this->assertEquals('manager', $execution->getUpdatedBy());
-    }
     
     /**
      * 测试时间设置
@@ -82,11 +69,11 @@ class ScriptExecutionTest extends TestCase
     {
         $execution = new ScriptExecution();
         
-        $createTime = new \DateTime('2023-01-01 10:00:00');
+        $createTime = new \DateTimeImmutable('2023-01-01 10:00:00');
         $execution->setCreateTime($createTime);
         $this->assertEquals($createTime, $execution->getCreateTime());
         
-        $updateTime = new \DateTime('2023-01-02 11:00:00');
+        $updateTime = new \DateTimeImmutable('2023-01-02 11:00:00');
         $execution->setUpdateTime($updateTime);
         $this->assertEquals($updateTime, $execution->getUpdateTime());
     }
@@ -122,7 +109,7 @@ class ScriptExecutionTest extends TestCase
         $execution = new ScriptExecution();
         $execution->setScript($this->shellScript);
         
-        $executedAt = new \DateTime('2023-01-01 10:00:00');
+        $executedAt = new \DateTimeImmutable('2023-01-01 10:00:00');
         $execution->setExecutedAt($executedAt);
         
         $expected = '测试脚本 - 2023-01-01 10:00:00';

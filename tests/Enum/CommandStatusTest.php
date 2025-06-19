@@ -47,9 +47,13 @@ class CommandStatusTest extends TestCase
      */
     public function testCompareEnums(): void
     {
-        $this->assertTrue(CommandStatus::PENDING === CommandStatus::PENDING);
-        $this->assertFalse(CommandStatus::PENDING === CommandStatus::RUNNING);
-        $this->assertTrue(CommandStatus::PENDING !== CommandStatus::RUNNING);
+        // 测试枚举比较功能
+        $pending1 = CommandStatus::PENDING;
+        $pending2 = CommandStatus::PENDING;
+        $running = CommandStatus::RUNNING;
+        
+        $this->assertSame($pending1, $pending2);
+        $this->assertNotSame($pending1, $running);
     }
     
     /**
@@ -72,5 +76,33 @@ class CommandStatusTest extends TestCase
         }
         
         $this->assertEquals('running', $result);
+    }
+    
+    /**
+     * 测试枚举标签功能
+     */
+    public function testGetLabel(): void
+    {
+        $this->assertEquals('待执行', CommandStatus::PENDING->getLabel());
+        $this->assertEquals('执行中', CommandStatus::RUNNING->getLabel());
+        $this->assertEquals('已完成', CommandStatus::COMPLETED->getLabel());
+        $this->assertEquals('失败', CommandStatus::FAILED->getLabel());
+        $this->assertEquals('超时', CommandStatus::TIMEOUT->getLabel());
+        $this->assertEquals('已取消', CommandStatus::CANCELED->getLabel());
+    }
+    
+    /**
+     * 测试枚举选择功能
+     */
+    public function testSelectFunctionality(): void
+    {
+        $options = CommandStatus::genOptions();
+        $this->assertNotEmpty($options);
+        
+        $item = CommandStatus::PENDING->toSelectItem();
+        $this->assertArrayHasKey('label', $item);
+        $this->assertArrayHasKey('value', $item);
+        $this->assertEquals('待执行', $item['label']);
+        $this->assertEquals('pending', $item['value']);
     }
 } 

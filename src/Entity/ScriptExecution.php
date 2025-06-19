@@ -9,14 +9,14 @@ use ServerShellBundle\Enum\CommandStatus;
 use ServerShellBundle\Repository\ScriptExecutionRepository;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
-use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
-use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
+use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 
 #[ORM\Entity(repositoryClass: ScriptExecutionRepository::class)]
 #[ORM\Table(name: 'ims_server_script_execution', options: ['comment' => '脚本执行结果'])]
 class ScriptExecution implements \Stringable
 {
     use TimestampableAware;
+    use BlameableAware;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
@@ -40,7 +40,7 @@ class ScriptExecution implements \Stringable
     private ?string $result = null;
 
     #[TrackColumn]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '执行时间'])]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '执行时间'])]
     private ?\DateTimeInterface $executedAt = null;
 
     #[TrackColumn]
@@ -51,13 +51,6 @@ class ScriptExecution implements \Stringable
     #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['comment' => '退出码'])]
     private ?int $exitCode = null;
 
-    #[CreatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '创建人'])]
-    private ?string $createdBy = null;
-
-    #[UpdatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '更新人'])]
-    private ?string $updatedBy = null;
 
     public function getId(): ?int
     {
@@ -148,29 +141,7 @@ class ScriptExecution implements \Stringable
         return $this;
     }
 
-    public function getCreatedBy(): ?string
-    {
-        return $this->createdBy;
-    }
-
-    public function setCreatedBy(?string $createdBy): static
-    {
-        $this->createdBy = $createdBy;
-
-        return $this;
-    }
-
-    public function getUpdatedBy(): ?string
-    {
-        return $this->updatedBy;
-    }
-
-    public function setUpdatedBy(?string $updatedBy): static
-    {
-        $this->updatedBy = $updatedBy;
-
-        return $this;
-    }public function __toString(): string
+    public function __toString(): string
     {
         return $this->getScript()->getName() . ' - ' . $this->getExecutedAt()?->format('Y-m-d H:i:s');
     }

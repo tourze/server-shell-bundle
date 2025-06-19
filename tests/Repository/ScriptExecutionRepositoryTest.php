@@ -7,23 +7,14 @@ use ServerShellBundle\Repository\ScriptExecutionRepository;
 
 class ScriptExecutionRepositoryTest extends TestCase
 {
-    public function testFindByNodeMethodExists(): void
+    public function testRepositoryMethodsExist(): void
     {
-        $this->assertTrue(method_exists(ScriptExecutionRepository::class, 'findByNode'), '方法findByNode应该存在');
-    }
-    
-    public function testFindByScriptMethodExists(): void
-    {
-        $this->assertTrue(method_exists(ScriptExecutionRepository::class, 'findByScript'), '方法findByScript应该存在');
-    }
-    
-    public function testFindByStatusMethodExists(): void
-    {
-        $this->assertTrue(method_exists(ScriptExecutionRepository::class, 'findByStatus'), '方法findByStatus应该存在');
-    }
-    
-    public function testFindByNodeAndScriptMethodExists(): void
-    {
-        $this->assertTrue(method_exists(ScriptExecutionRepository::class, 'findByNodeAndScript'), '方法findByNodeAndScript应该存在');
+        // 验证仓储类实现了预期的查询方法
+        $reflection = new \ReflectionClass(ScriptExecutionRepository::class);
+        
+        $this->assertTrue($reflection->hasMethod('findByNode'));
+        $this->assertTrue($reflection->hasMethod('findByScript'));
+        $this->assertTrue($reflection->hasMethod('findByStatus'));
+        $this->assertTrue($reflection->hasMethod('findByNodeAndScript'));
     }
 } 
