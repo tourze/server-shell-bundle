@@ -18,6 +18,8 @@ use ServerShellBundle\Repository\ScriptExecutionRepository;
 use ServerShellBundle\Repository\ShellScriptRepository;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Messenger\MessageBusInterface;
+use ServerShellBundle\Exception\ScriptDisabledException;
+use ServerShellBundle\Exception\ScriptUploadException;
 
 class ShellScriptService
 {
@@ -135,7 +137,7 @@ class ShellScriptService
     public function executeScript(ShellScript $script, Node $node): ScriptExecution
     {
         if (!$script->isEnabled()) {
-            throw new \RuntimeException('脚本已禁用，无法执行');
+            throw new ScriptDisabledException('脚本已禁用，无法执行');
         }
 
         // 创建执行记录
@@ -218,7 +220,7 @@ class ShellScriptService
         // 执行上传
         $uploadResult = $this->remoteCommandService->executeCommand($uploadCommand);
         if ($uploadCommand->getStatus() !== RemoteCommandStatus::COMPLETED) {
-            throw new \RuntimeException('脚本上传失败: ' . $uploadResult->getResult());
+            throw new ScriptUploadException('脚本上传失败: ' . $uploadResult->getResult());
         }
 
         return $remoteScriptPath;
@@ -229,7 +231,7 @@ class ShellScriptService
      */
     private function executeRemoteScript(ShellScript $script, Node $node, string $remoteScriptPath): RemoteCommand
     {
-        $workingDir = $script->getWorkingDirectory() ?: '/tmp';
+        $workingDir = $script->getWorkingDirectory() ?? '/tmp';
         $execCommand = $this->remoteCommandService->createCommand(
             $node,
             '执行脚本: ' . $script->getName(),
@@ -336,7 +338,7 @@ class ShellScriptService
     public function scheduleScript(ShellScript $script, Node $node): ScriptExecution
     {
         if (!$script->isEnabled()) {
-            throw new \RuntimeException('脚本已禁用，无法执行');
+            throw new ScriptDisabledException('脚本已禁用，无法执行');
         }
 
         // 创建执行记录

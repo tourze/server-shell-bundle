@@ -19,25 +19,16 @@ class ScriptExecutionFixtures extends Fixture implements DependentFixtureInterfa
      */
     public function load(ObjectManager $manager): void
     {
-        // 检查是否有可用的 Node 实体
-        $nodeRepository = $manager->getRepository(Node::class);
-        $nodes = $nodeRepository->findAll();
+        // 创建一个测试节点用于脚本执行
+        $node = new Node();
+        $node->setName('测试服务器');
+        $node->setSshHost('localhost');
+        $node->setSshPort(22);
+        $node->setSshUser('root');
+        $node->setSshPassword('password');
 
-        if (empty($nodes)) {
-            // 如果没有 Node 实体，创建一个虚拟节点用于测试
-            $node = new Node();
-            $node->setName('测试服务器');
-            $node->setSshHost('localhost');
-            $node->setSshPort(22);
-            $node->setSshUser('root');
-            $node->setSshPassword('password');
-
-            $manager->persist($node);
-            $manager->flush();
-        } else {
-            // 使用第一个可用的节点
-            $node = $nodes[0];
-        }
+        $manager->persist($node);
+        $this->addReference('test_node', $node);
 
         // 1. 系统信息脚本 - 已成功执行
         $this->createScriptExecution(
@@ -98,6 +89,8 @@ class ScriptExecutionFixtures extends Fixture implements DependentFixtureInterfa
             null,
             null
         );
+
+        $manager->flush();
     }
 
     /**
@@ -124,7 +117,6 @@ class ScriptExecutionFixtures extends Fixture implements DependentFixtureInterfa
         $execution->setExitCode($exitCode);
 
         $manager->persist($execution);
-        $manager->flush();
     }
 
     /**

@@ -59,23 +59,30 @@ class CommandStatusTest extends TestCase
     /**
      * 测试枚举实例可以用于switch语句
      */
-    public function testEnumInSwitch(): void
+    public function testEnumInMatch(): void
     {
-        $status = CommandStatus::RUNNING;
+        // 测试每个枚举值的match表达式
+        $testCases = [
+            [CommandStatus::PENDING, 'pending'],
+            [CommandStatus::RUNNING, 'running'],
+            [CommandStatus::COMPLETED, 'completed'],
+            [CommandStatus::FAILED, 'failed'],
+            [CommandStatus::TIMEOUT, 'timeout'],
+            [CommandStatus::CANCELED, 'canceled'],
+        ];
         
-        $result = '';
-        switch ($status) {
-            case CommandStatus::PENDING:
-                $result = 'pending';
-                break;
-            case CommandStatus::RUNNING:
-                $result = 'running';
-                break;
-            default:
-                $result = 'other';
+        foreach ($testCases as [$status, $expected]) {
+            $result = match ($status) {
+                CommandStatus::PENDING => 'pending',
+                CommandStatus::RUNNING => 'running',
+                CommandStatus::COMPLETED => 'completed',
+                CommandStatus::FAILED => 'failed',
+                CommandStatus::TIMEOUT => 'timeout',
+                CommandStatus::CANCELED => 'canceled',
+            };
+            
+            $this->assertEquals($expected, $result);
         }
-        
-        $this->assertEquals('running', $result);
     }
     
     /**

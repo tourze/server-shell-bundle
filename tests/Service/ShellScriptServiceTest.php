@@ -209,13 +209,6 @@ class ShellScriptServiceTest extends TestCase
         $this->assertSame($expectedScripts, $result);
     }
     
-    /**
-     * 测试执行脚本成功场景
-     */
-    public function testExecuteScript_Success(): void
-    {
-        $this->markTestSkipped('此测试需要更复杂的模拟设置，暂时跳过');
-    }
     
     /**
      * 测试禁用脚本无法执行
@@ -236,13 +229,6 @@ class ShellScriptServiceTest extends TestCase
         $this->service->executeScript($script, $node);
     }
     
-    /**
-     * 测试脚本上传失败场景
-     */
-    public function testExecuteScript_UploadFailure(): void
-    {
-        $this->markTestSkipped('此测试需要更复杂的模拟设置，暂时跳过');
-    }
     
     /**
      * 测试异步执行脚本
