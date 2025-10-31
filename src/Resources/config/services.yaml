@@ -6,8 +6,6 @@ services:
 
   ServerShellBundle\Controller\:
     resource: '../../Controller/'
-  ServerShellBundle\DataFixtures\:
-    resource: '../../DataFixtures/'
   ServerShellBundle\MessageHandler\:
     resource: '../../MessageHandler/'
   ServerShellBundle\Repository\:

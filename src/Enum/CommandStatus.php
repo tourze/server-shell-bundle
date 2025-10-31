@@ -22,7 +22,7 @@ enum CommandStatus: string implements Labelable, Itemable, Selectable
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PENDING => '待执行',
             self::RUNNING => '执行中',
             self::COMPLETED => '已完成',

@@ -2,8 +2,6 @@
 
 namespace ServerShellBundle\Exception;
 
-use RuntimeException;
-
-class ScriptUploadException extends RuntimeException
+class ScriptUploadException extends \RuntimeException
 {
 }

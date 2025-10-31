@@ -5,6 +5,7 @@ namespace ServerShellBundle\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use ServerShellBundle\Repository\ShellScriptRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
 use Tourze\DoctrineUserBundle\Traits\BlameableAware;
@@ -15,45 +16,58 @@ class ShellScript implements \Stringable
 {
     use TimestampableAware;
     use BlameableAware;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
-    private ?int $id = 0;
+    private int $id = 0;
 
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 100)]
     #[TrackColumn]
     #[ORM\Column(length: 100, options: ['comment' => '脚本名称'])]
     private string $name;
 
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 65535)]
     #[TrackColumn]
     #[ORM\Column(type: Types::TEXT, options: ['comment' => '脚本内容'])]
     private string $content;
 
+    #[Assert\Length(max: 200)]
     #[TrackColumn]
     #[ORM\Column(length: 200, nullable: true, options: ['comment' => '执行目录'])]
     private ?string $workingDirectory = null;
 
+    #[Assert\Type(type: 'bool')]
     #[TrackColumn]
     #[ORM\Column(type: Types::BOOLEAN, nullable: true, options: ['comment' => '是否使用sudo执行', 'default' => false])]
     private ?bool $useSudo = false;
 
+    #[Assert\Positive]
     #[TrackColumn]
     #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['comment' => '超时时间(秒)', 'default' => 300])]
     private ?int $timeout = 300;
 
+    #[Assert\Type(type: 'bool')]
     #[TrackColumn]
     #[ORM\Column(type: Types::BOOLEAN, nullable: true, options: ['comment' => '是否启用', 'default' => true])]
     private ?bool $enabled = true;
 
+    /**
+     * @var array<string>|null
+     */
+    #[Assert\Type(type: 'array')]
     #[TrackColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '标签列表'])]
+    #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '标签列表'])]
     private ?array $tags = null;
 
+    #[Assert\Length(max: 65535)]
     #[TrackColumn]
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '描述'])]
     private ?string $description = null;
 
-
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
@@ -63,11 +77,9 @@ class ShellScript implements \Stringable
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(string $name): void
     {
         $this->name = $name;
-
-        return $this;
     }
 
     public function getContent(): string
@@ -75,11 +87,9 @@ class ShellScript implements \Stringable
         return $this->content;
     }
 
-    public function setContent(string $content): static
+    public function setContent(string $content): void
     {
         $this->content = $content;
-
-        return $this;
     }
 
     public function getWorkingDirectory(): ?string
@@ -87,11 +97,9 @@ class ShellScript implements \Stringable
         return $this->workingDirectory;
     }
 
-    public function setWorkingDirectory(?string $workingDirectory): static
+    public function setWorkingDirectory(?string $workingDirectory): void
     {
         $this->workingDirectory = $workingDirectory;
-
-        return $this;
     }
 
     public function isUseSudo(): ?bool
@@ -99,11 +107,9 @@ class ShellScript implements \Stringable
         return $this->useSudo;
     }
 
-    public function setUseSudo(?bool $useSudo): static
+    public function setUseSudo(?bool $useSudo): void
     {
         $this->useSudo = $useSudo;
-
-        return $this;
     }
 
     public function getTimeout(): ?int
@@ -111,11 +117,9 @@ class ShellScript implements \Stringable
         return $this->timeout;
     }
 
-    public function setTimeout(?int $timeout): static
+    public function setTimeout(?int $timeout): void
     {
         $this->timeout = $timeout;
-
-        return $this;
     }
 
     public function isEnabled(): ?bool
@@ -123,23 +127,21 @@ class ShellScript implements \Stringable
         return $this->enabled;
     }
 
-    public function setEnabled(?bool $enabled): static
+    public function setEnabled(?bool $enabled): void
     {
         $this->enabled = $enabled;
-
-        return $this;
     }
 
+    /** @return array<string>|null */
     public function getTags(): ?array
     {
         return $this->tags;
     }
 
-    public function setTags(?array $tags): static
+    /** @param array<string>|null $tags */
+    public function setTags(?array $tags): void
     {
         $this->tags = $tags;
-
-        return $this;
     }
 
     public function getDescription(): ?string
@@ -147,11 +149,9 @@ class ShellScript implements \Stringable
         return $this->description;
     }
 
-    public function setDescription(?string $description): static
+    public function setDescription(?string $description): void
     {
         $this->description = $description;
-
-        return $this;
     }
 
     public function __toString(): string

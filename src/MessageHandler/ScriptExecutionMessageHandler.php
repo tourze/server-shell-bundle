@@ -3,14 +3,18 @@
 namespace ServerShellBundle\MessageHandler;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use ServerShellBundle\Enum\CommandStatus;
 use ServerShellBundle\Message\ScriptExecutionMessage;
 use ServerShellBundle\Repository\ScriptExecutionRepository;
 use ServerShellBundle\Service\ShellScriptService;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
+#[WithMonologChannel(channel: 'server_shell')]
+#[Autoconfigure(public: true)]
 class ScriptExecutionMessageHandler
 {
     public function __construct(
@@ -26,16 +30,19 @@ class ScriptExecutionMessageHandler
         $executionId = $message->getExecutionId();
         $execution = $this->scriptExecutionRepository->find($executionId);
 
-        if ($execution === null) {
+        if (null === $execution) {
             $this->logger->error('找不到脚本执行记录', ['execution_id' => $executionId]);
+
             return;
         }
 
-        if ($execution->getStatus() !== CommandStatus::PENDING) {
+        $status = $execution->getStatus();
+        if (CommandStatus::PENDING !== $status) {
             $this->logger->warning('脚本执行状态不是待处理', [
                 'execution_id' => $executionId,
-                'status' => $execution->getStatus()->value,
+                'status' => null !== $status ? $status->value : 'null',
             ]);
+
             return;
         }
 

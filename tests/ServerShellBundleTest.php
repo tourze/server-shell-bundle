@@ -1,30 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ServerShellBundle\Tests;
 
-use PHPUnit\Framework\TestCase;
-use ServerCommandBundle\ServerCommandBundle;
-use ServerNodeBundle\ServerNodeBundle;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use ServerShellBundle\ServerShellBundle;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractBundleTestCase;
 
-class ServerShellBundleTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(ServerShellBundle::class)]
+#[RunTestsInSeparateProcesses]
+final class ServerShellBundleTest extends AbstractBundleTestCase
 {
-    /**
-     * 测试Bundle依赖关系
-     */
-    public function testBundleDependencies(): void
-    {
-        $dependencies = ServerShellBundle::getBundleDependencies();
-        
-        // 验证依赖数量
-        $this->assertCount(2, $dependencies);
-        
-        // 验证ServerNodeBundle依赖
-        $this->assertArrayHasKey(ServerNodeBundle::class, $dependencies);
-        $this->assertEquals(['all' => true], $dependencies[ServerNodeBundle::class]);
-        
-        // 验证ServerCommandBundle依赖
-        $this->assertArrayHasKey(ServerCommandBundle::class, $dependencies);
-        $this->assertEquals(['all' => true], $dependencies[ServerCommandBundle::class]);
-    }
-} 
+}

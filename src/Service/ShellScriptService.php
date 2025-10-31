@@ -2,8 +2,8 @@
 
 namespace ServerShellBundle\Service;
 
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use SebastianBergmann\Timer\Timer;
 use ServerCommandBundle\Entity\RemoteCommand;
@@ -13,14 +13,15 @@ use ServerNodeBundle\Entity\Node;
 use ServerShellBundle\Entity\ScriptExecution;
 use ServerShellBundle\Entity\ShellScript;
 use ServerShellBundle\Enum\CommandStatus;
+use ServerShellBundle\Exception\ScriptDisabledException;
+use ServerShellBundle\Exception\ScriptUploadException;
 use ServerShellBundle\Message\ScriptExecutionMessage;
 use ServerShellBundle\Repository\ScriptExecutionRepository;
 use ServerShellBundle\Repository\ShellScriptRepository;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Messenger\MessageBusInterface;
-use ServerShellBundle\Exception\ScriptDisabledException;
-use ServerShellBundle\Exception\ScriptUploadException;
 
+#[WithMonologChannel(channel: 'server_shell')]
 class ShellScriptService
 {
     private const TEMP_SCRIPT_DIR = '/tmp/shell_scripts';
@@ -37,6 +38,9 @@ class ShellScriptService
 
     /**
      * 创建新的Shell脚本
+     */
+    /**
+     * @param array<string>|null $tags
      */
     public function createScript(
         string $name,
@@ -66,6 +70,9 @@ class ShellScriptService
     /**
      * 更新Shell脚本
      */
+    /**
+     * @param array<string>|null $tags
+     */
     public function updateScript(
         ShellScript $script,
         ?string $name = null,
@@ -77,28 +84,28 @@ class ShellScriptService
         ?string $description = null,
         ?bool $enabled = null,
     ): ShellScript {
-        if ($name !== null) {
+        if (null !== $name) {
             $script->setName($name);
         }
-        if ($content !== null) {
+        if (null !== $content) {
             $script->setContent($content);
         }
-        if ($workingDirectory !== null) {
+        if (null !== $workingDirectory) {
             $script->setWorkingDirectory($workingDirectory);
         }
-        if ($useSudo !== null) {
+        if (null !== $useSudo) {
             $script->setUseSudo($useSudo);
         }
-        if ($timeout !== null) {
+        if (null !== $timeout) {
             $script->setTimeout($timeout);
         }
-        if ($tags !== null) {
+        if (null !== $tags) {
             $script->setTags($tags);
         }
-        if ($description !== null) {
+        if (null !== $description) {
             $script->setDescription($description);
         }
-        if ($enabled !== null) {
+        if (null !== $enabled) {
             $script->setEnabled($enabled);
         }
 
@@ -118,6 +125,7 @@ class ShellScriptService
     /**
      * 查找所有启用的脚本
      */
+    /** @return array<ShellScript> */
     public function findAllEnabledScripts(): array
     {
         return $this->shellScriptRepository->findAllEnabled();
@@ -125,6 +133,9 @@ class ShellScriptService
 
     /**
      * 按标签查找脚本
+     */
+    /** @param array<string> $tags
+     * @return array<ShellScript>
      */
     public function findScriptsByTags(array $tags): array
     {
@@ -136,7 +147,7 @@ class ShellScriptService
      */
     public function executeScript(ShellScript $script, Node $node): ScriptExecution
     {
-        if (!$script->isEnabled()) {
+        if (!($script->isEnabled() ?? false)) {
             throw new ScriptDisabledException('脚本已禁用，无法执行');
         }
 
@@ -198,7 +209,7 @@ class ShellScriptService
     private function markExecutionAsRunning(ScriptExecution $execution): void
     {
         $execution->setStatus(CommandStatus::RUNNING);
-        $execution->setExecutedAt(new DateTime());
+        $execution->setExecutedAt(new \DateTime());
         $this->entityManager->flush();
     }
 
@@ -219,7 +230,7 @@ class ShellScriptService
 
         // 执行上传
         $uploadResult = $this->remoteCommandService->executeCommand($uploadCommand);
-        if ($uploadCommand->getStatus() !== RemoteCommandStatus::COMPLETED) {
+        if (RemoteCommandStatus::COMPLETED !== $uploadCommand->getStatus()) {
             throw new ScriptUploadException('脚本上传失败: ' . $uploadResult->getResult());
         }
 
@@ -275,7 +286,7 @@ class ShellScriptService
         $execution->setResult($execResult->getResult());
         $execution->setStatus($this->mapRemoteCommandStatus($execResult->getStatus()));
         $execution->setExecutionTime($executionTime);
-        $execution->setExitCode($execResult->getStatus() === RemoteCommandStatus::COMPLETED ? 0 : 1);
+        $execution->setExitCode(RemoteCommandStatus::COMPLETED === $execResult->getStatus() ? 0 : 1);
 
         $this->entityManager->flush();
     }
@@ -321,13 +332,13 @@ class ShellScriptService
 
         // 确保临时目录存在
         if (!$fs->exists(self::TEMP_SCRIPT_DIR)) {
-            $fs->mkdir(self::TEMP_SCRIPT_DIR, 0700);
+            $fs->mkdir(self::TEMP_SCRIPT_DIR, 0o700);
         }
 
         // 创建临时脚本文件
         $filename = self::TEMP_SCRIPT_DIR . '/script_' . $script->getId() . '_' . uniqid() . '.sh';
         file_put_contents($filename, $script->getContent());
-        chmod($filename, 0700);
+        chmod($filename, 0o700);
 
         return $filename;
     }
@@ -337,7 +348,7 @@ class ShellScriptService
      */
     public function scheduleScript(ShellScript $script, Node $node): ScriptExecution
     {
-        if (!$script->isEnabled()) {
+        if (!($script->isEnabled() ?? false)) {
             throw new ScriptDisabledException('脚本已禁用，无法执行');
         }
 
@@ -367,6 +378,7 @@ class ShellScriptService
     /**
      * 查找指定节点上的脚本执行记录
      */
+    /** @return array<ScriptExecution> */
     public function findExecutionsByNode(Node $node): array
     {
         return $this->scriptExecutionRepository->findByNode($node);
@@ -375,6 +387,7 @@ class ShellScriptService
     /**
      * 查找指定脚本的执行记录
      */
+    /** @return array<ScriptExecution> */
     public function findExecutionsByScript(ShellScript $script): array
     {
         return $this->scriptExecutionRepository->findByScript($script);
@@ -383,6 +396,7 @@ class ShellScriptService
     /**
      * 查找指定节点和脚本的执行记录
      */
+    /** @return array<ScriptExecution> */
     public function findExecutionsByNodeAndScript(Node $node, ShellScript $script): array
     {
         return $this->scriptExecutionRepository->findByNodeAndScript($node, $script);

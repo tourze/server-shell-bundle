@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use ServerNodeBundle\Entity\Node;
 use ServerShellBundle\Enum\CommandStatus;
 use ServerShellBundle\Repository\ScriptExecutionRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
 use Tourze\DoctrineUserBundle\Traits\BlameableAware;
@@ -17,42 +18,45 @@ class ScriptExecution implements \Stringable
 {
     use TimestampableAware;
     use BlameableAware;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
-    private ?int $id = 0;
+    private int $id = 0;
 
-    #[TrackColumn]
     #[ORM\ManyToOne(targetEntity: Node::class)]
     #[ORM\JoinColumn(nullable: false)]
     private Node $node;
 
-    #[TrackColumn]
     #[ORM\ManyToOne(targetEntity: ShellScript::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ShellScript $script;
 
+    #[Assert\Choice(callback: [CommandStatus::class, 'cases'])]
     #[ORM\Column(length: 40, nullable: true, enumType: CommandStatus::class, options: ['comment' => '状态'])]
     private ?CommandStatus $status = CommandStatus::PENDING;
 
+    #[Assert\Length(max: 65535)]
     #[TrackColumn]
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '执行结果'])]
     private ?string $result = null;
 
+    #[Assert\Type(type: \DateTimeInterface::class)]
     #[TrackColumn]
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '执行时间'])]
     private ?\DateTimeInterface $executedAt = null;
 
+    #[Assert\PositiveOrZero]
     #[TrackColumn]
     #[ORM\Column(type: Types::FLOAT, nullable: true, options: ['comment' => '执行耗时(秒)'])]
     private ?float $executionTime = null;
 
+    #[Assert\Range(min: 0, max: 255)]
     #[TrackColumn]
     #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['comment' => '退出码'])]
     private ?int $exitCode = null;
 
-
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
@@ -62,11 +66,9 @@ class ScriptExecution implements \Stringable
         return $this->node;
     }
 
-    public function setNode(Node $node): static
+    public function setNode(Node $node): void
     {
         $this->node = $node;
-
-        return $this;
     }
 
     public function getScript(): ShellScript
@@ -74,11 +76,9 @@ class ScriptExecution implements \Stringable
         return $this->script;
     }
 
-    public function setScript(ShellScript $script): static
+    public function setScript(ShellScript $script): void
     {
         $this->script = $script;
-
-        return $this;
     }
 
     public function getStatus(): ?CommandStatus
@@ -86,11 +86,9 @@ class ScriptExecution implements \Stringable
         return $this->status;
     }
 
-    public function setStatus(?CommandStatus $status): static
+    public function setStatus(?CommandStatus $status): void
     {
         $this->status = $status;
-
-        return $this;
     }
 
     public function getResult(): ?string
@@ -98,11 +96,9 @@ class ScriptExecution implements \Stringable
         return $this->result;
     }
 
-    public function setResult(?string $result): static
+    public function setResult(?string $result): void
     {
         $this->result = $result;
-
-        return $this;
     }
 
     public function getExecutedAt(): ?\DateTimeInterface
@@ -110,11 +106,9 @@ class ScriptExecution implements \Stringable
         return $this->executedAt;
     }
 
-    public function setExecutedAt(?\DateTimeInterface $executedAt): static
+    public function setExecutedAt(?\DateTimeInterface $executedAt): void
     {
         $this->executedAt = $executedAt;
-
-        return $this;
     }
 
     public function getExecutionTime(): ?float
@@ -122,11 +116,9 @@ class ScriptExecution implements \Stringable
         return $this->executionTime;
     }
 
-    public function setExecutionTime(?float $executionTime): static
+    public function setExecutionTime(?float $executionTime): void
     {
         $this->executionTime = $executionTime;
-
-        return $this;
     }
 
     public function getExitCode(): ?int
@@ -134,11 +126,9 @@ class ScriptExecution implements \Stringable
         return $this->exitCode;
     }
 
-    public function setExitCode(?int $exitCode): static
+    public function setExitCode(?int $exitCode): void
     {
         $this->exitCode = $exitCode;
-
-        return $this;
     }
 
     public function __toString(): string

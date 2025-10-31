@@ -2,6 +2,8 @@
 
 namespace ServerShellBundle\Controller\Admin;
 
+use Doctrine\ORM\QueryBuilder;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminCrud;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -24,7 +26,11 @@ use ServerShellBundle\Entity\ScriptExecution;
 use ServerShellBundle\Enum\CommandStatus;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 
-class ScriptExecutionCrudController extends AbstractCrudController
+/**
+ * @extends AbstractCrudController<ScriptExecution>
+ */
+#[AdminCrud(routePath: '/server-shell/script-execution', routeName: 'server_shell_script_execution')]
+final class ScriptExecutionCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {
@@ -37,26 +43,30 @@ class ScriptExecutionCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('脚本执行记录')
             ->setEntityLabelInPlural('脚本执行记录')
             ->setPageTitle('index', '脚本执行记录列表')
-            ->setPageTitle('detail', fn(ScriptExecution $execution) => sprintf('执行记录详情: %s', $execution->getScript()->getName()))
-            ->setPageTitle('edit', fn(ScriptExecution $execution) => sprintf('编辑执行记录: %s', $execution->getScript()->getName()))
+            ->setPageTitle('detail', fn (ScriptExecution $execution) => sprintf('执行记录详情: %s', $execution->getScript()->getName()))
+            ->setPageTitle('edit', fn (ScriptExecution $execution) => sprintf('编辑执行记录: %s', $execution->getScript()->getName()))
             ->setHelp('index', '查看脚本执行历史记录')
             ->setDefaultSort(['createTime' => 'DESC'])
-            ->setPaginatorPageSize(20);
+            ->setPaginatorPageSize(20)
+        ;
     }
 
     public function configureFields(string $pageName): iterable
     {
         yield IdField::new('id', 'ID')
             ->setMaxLength(9999)
-            ->hideOnForm();
+            ->hideOnForm()
+        ;
 
         yield AssociationField::new('node', '服务器节点')
             ->setRequired(true)
-            ->setFormTypeOption('choice_label', 'name');
+            ->setFormTypeOption('choice_label', 'name')
+        ;
 
         yield AssociationField::new('script', 'Shell脚本')
             ->setRequired(true)
-            ->setFormTypeOption('choice_label', 'name');
+            ->setFormTypeOption('choice_label', 'name')
+        ;
 
         yield ChoiceField::new('status', '状态')
             ->setFormType(EnumType::class)
@@ -67,32 +77,39 @@ class ScriptExecutionCrudController extends AbstractCrudController
                 }
 
                 return $value->getLabel();
-            });
+            })
+        ;
 
         yield TextareaField::new('result', '执行结果')
             ->hideOnForm()
             ->hideOnIndex()
-            ->setFormTypeOption('disabled', true);
+            ->setFormTypeOption('disabled', true)
+        ;
 
         yield DateTimeField::new('executedAt', '执行时间')
             ->hideOnForm()
-            ->setFormat('yyyy-MM-dd HH:mm:ss');
+            ->setFormat('yyyy-MM-dd HH:mm:ss')
+        ;
 
         yield NumberField::new('executionTime', '执行耗时(秒)')
             ->hideOnForm()
-            ->setNumDecimals(3);
+            ->setNumDecimals(3)
+        ;
 
         yield NumberField::new('exitCode', '退出码')
-            ->hideOnForm();
+            ->hideOnForm()
+        ;
 
         yield DateTimeField::new('createTime', '创建时间')
             ->hideOnForm()
-            ->setFormat('yyyy-MM-dd HH:mm:ss');
+            ->setFormat('yyyy-MM-dd HH:mm:ss')
+        ;
 
         yield DateTimeField::new('updateTime', '更新时间')
             ->hideOnForm()
             ->hideOnIndex()
-            ->setFormat('yyyy-MM-dd HH:mm:ss');
+            ->setFormat('yyyy-MM-dd HH:mm:ss')
+        ;
     }
 
     public function configureFilters(Filters $filters): Filters
@@ -110,7 +127,8 @@ class ScriptExecutionCrudController extends AbstractCrudController
                     '已取消' => CommandStatus::CANCELED->value,
                 ]))
             ->add(DateTimeFilter::new('executedAt', '执行时间'))
-            ->add(DateTimeFilter::new('createTime', '创建时间'));
+            ->add(DateTimeFilter::new('createTime', '创建时间'))
+        ;
     }
 
     public function configureActions(Actions $actions): Actions
@@ -118,15 +136,17 @@ class ScriptExecutionCrudController extends AbstractCrudController
         return $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
             ->disable(Action::NEW, Action::EDIT)
-            ->reorder(Crud::PAGE_INDEX, [Action::DETAIL, Action::DELETE]);
+            ->reorder(Crud::PAGE_INDEX, [Action::DETAIL])
+        ;
     }
 
-    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): \Doctrine\ORM\QueryBuilder
+    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
     {
         return parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters)
             ->select('entity')
             ->leftJoin('entity.node', 'node')
             ->leftJoin('entity.script', 'script')
-            ->orderBy('entity.createTime', 'DESC');
+            ->orderBy('entity.createTime', 'DESC')
+        ;
     }
 }
