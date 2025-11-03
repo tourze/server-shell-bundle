@@ -7,6 +7,7 @@ use ServerCommandBundle\ServerCommandBundle;
 use ServerNodeBundle\ServerNodeBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Tourze\BundleDependency\BundleDependencyInterface;
+use Tourze\EasyAdminMenuBundle\EasyAdminMenuBundle;
 
 class ServerShellBundle extends Bundle implements BundleDependencyInterface
 {
@@ -16,6 +17,7 @@ class ServerShellBundle extends Bundle implements BundleDependencyInterface
             DoctrineBundle::class => ['all' => true],
             ServerNodeBundle::class => ['all' => true],
             ServerCommandBundle::class => ['all' => true],
+            EasyAdminMenuBundle::class => ['all' => true],
         ];
     }
 }
