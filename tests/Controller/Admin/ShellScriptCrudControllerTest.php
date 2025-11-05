@@ -56,9 +56,7 @@ final class ShellScriptCrudControllerTest extends AbstractEasyAdminControllerTes
 
     public function testShellScriptAdminAccessRequiresAuthentication(): void
     {
-        $client = self::createClientWithDatabase();
-        $admin = $this->createAdminUser('admin@test.com', 'password123');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password123');
+        $client = $this->createAuthenticatedClient();
 
         $client->request('GET', $this->generateAdminUrl('index'));
 
@@ -73,10 +71,7 @@ final class ShellScriptCrudControllerTest extends AbstractEasyAdminControllerTes
 
     public function testShellScriptIndexPageWithAdminUser(): void
     {
-        $client = self::createClientWithDatabase();
-
-        $admin = $this->createAdminUser('admin@test.com', 'password123');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password123');
+        $client = $this->createAuthenticatedClient();
 
         $client->request('GET', '/admin');
 
@@ -98,10 +93,7 @@ final class ShellScriptCrudControllerTest extends AbstractEasyAdminControllerTes
 
     public function testValidationAndSearchConfiguration(): void
     {
-        $client = self::createClientWithDatabase();
-
-        $admin = $this->createAdminUser('admin@test.com', 'password123');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password123');
+        $client = $this->createAuthenticatedClient();
 
         // 测试管理页面基本访问
         $client->request('GET', '/admin');
