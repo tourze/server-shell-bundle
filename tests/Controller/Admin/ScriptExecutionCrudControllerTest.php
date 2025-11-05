@@ -65,9 +65,7 @@ final class ScriptExecutionCrudControllerTest extends AbstractEasyAdminControlle
 
     public function testAdminAccessRequiresAuthentication(): void
     {
-        $client = self::createClientWithDatabase();
-        $admin = $this->createAdminUser('admin@test.com', 'password123');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password123');
+        $client = self::createAuthenticatedClient();
 
         $client->request('GET', $this->generateAdminUrl('index'));
 
@@ -82,10 +80,7 @@ final class ScriptExecutionCrudControllerTest extends AbstractEasyAdminControlle
 
     public function testScriptExecutionIndexPageWithAdminUser(): void
     {
-        $client = self::createClientWithDatabase();
-
-        $admin = $this->createAdminUser('admin@test.com', 'password123');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password123');
+        $client = self::createAuthenticatedClient();
 
         $client->request('GET', '/admin');
 
@@ -107,10 +102,7 @@ final class ScriptExecutionCrudControllerTest extends AbstractEasyAdminControlle
 
     public function testValidationAndFiltersConfiguration(): void
     {
-        $client = self::createClientWithDatabase();
-
-        $admin = $this->createAdminUser('admin@test.com', 'password123');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password123');
+        $client = self::createAuthenticatedClient();
 
         // 测试管理页面基本访问
         $client->request('GET', '/admin');
