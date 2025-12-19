@@ -22,7 +22,6 @@ final class ShellScriptTest extends AbstractEntityTestCase
      */
     public function testBasicGetterAndSetter(): void
     {
-        // @phpstan-ignore integrationTest.noDirectInstantiationOfCoveredClass
         $shellScript = new ShellScript();
 
         // 测试名称
@@ -64,7 +63,6 @@ final class ShellScriptTest extends AbstractEntityTestCase
      */
     public function testTimeSettings(): void
     {
-        // @phpstan-ignore integrationTest.noDirectInstantiationOfCoveredClass
         $shellScript = new ShellScript();
 
         $createTime = new \DateTimeImmutable('2023-01-01 10:00:00');
@@ -81,7 +79,6 @@ final class ShellScriptTest extends AbstractEntityTestCase
      */
     public function testToString(): void
     {
-        // @phpstan-ignore integrationTest.noDirectInstantiationOfCoveredClass
         $shellScript = new ShellScript();
         $shellScript->setName('测试脚本');
 
@@ -93,7 +90,6 @@ final class ShellScriptTest extends AbstractEntityTestCase
      */
     public function testEdgeCases(): void
     {
-        // @phpstan-ignore integrationTest.noDirectInstantiationOfCoveredClass
         $shellScript = new ShellScript();
 
         // 测试ID初始值

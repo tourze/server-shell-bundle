@@ -4,7 +4,7 @@ namespace ServerShellBundle\DependencyInjection;
 
 use Tourze\SymfonyDependencyServiceLoader\AutoExtension;
 
-class ServerShellExtension extends AutoExtension
+final class ServerShellExtension extends AutoExtension
 {
     protected function getConfigDir(): string
     {
